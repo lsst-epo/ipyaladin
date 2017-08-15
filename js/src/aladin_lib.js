@@ -3396,6 +3396,16 @@ HiPSDefinition = (function() {
     "hips_service_url_1": "http://alasky.unistra.fr/SSC/xmmpnsky",
     "hips_service_url_2": "http://alaskybis.unistra.fr/SSC/xmmpnsky",
     "hips_service_url_3": "https://alaskybis.unistra.fr/SSC/xmmpnsky"
+}, {
+    "ID": "lsst/P/LSSTHSCCOSMOS/color",
+    "obs_title": "LSST EPO HSC COSMOS",
+    "hips_order": "12",
+    "hips_frame": "equatorial",
+    "hips_tile_format": "png",
+    "hips_service_url": "http://maps.lsst.rocks/epo/hsc/better",
+    "hips_service_url_1": "http://maps.lsst.rocks/epo/hsc/better",
+    "hips_service_url_2": "http://maps.lsst.rocks/epo/hsc/better",
+    "hips_service_url_3": "http://maps.lsst.rocks/epo/hsc/better"
 }];
 
     var listHipsProperties = []; // this variable stores our current knowledge
@@ -9046,6 +9056,14 @@ HpxImageSurvey = (function() {
          "maxOrder": 9,
          "frame": "equatorial",
          "format": "jpeg"
+     },
+     {
+         "id": "P/LSSTHSCCOSMOS/color",
+         "url": "http://maps.lsst.rocks/epo/hsc/better",
+         "name": "LSST HSC COSMOS",
+         "maxOrder": 12,
+         "frame": "equatorial",
+         "format": "png"
      }
   ];
 
