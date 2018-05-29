@@ -1,10 +1,6 @@
 from ipywidgets import (widgets)
 from ipywidgets import widget_serialization
 from traitlets import (Float, Unicode, Bool, List, Dict, default)
-import logging
-
-logger = logging.getLogger('aladin_widget.py')
-
 
 
 """ Definition of the AladinLite widget in the python kernel """
@@ -31,10 +27,6 @@ class Aladin(widgets.DOMWidget):
 
     # values used in selection
     selection_ids = List(allow_none=True, default_value=None).tag(sync=True, o=True, **widget_serialization)
-#    selection_ids = List(trait=Unicode).tag(sync=True)
-#    selection_ids_flag = Bool(True).tag(sync=True)
-#    selection_test = Bool(False).tag(sync=True)
-#    selectionnumber = Float(0.0).tag(sync=True, o=True)
     
     # the remaining values exists for the widget constructor's sole purpose
     reticle_size = Float(22).tag(sync=True, o=True)
@@ -170,7 +162,7 @@ class Aladin(widgets.DOMWidget):
             for item in table_array[i]:
                 if isinstance(item, bytes):
                     row_data.append(item.decode('utf-8'))
-                elif isinstance(item, np.int64):
+                elif isinstance(item, np.int64):  # Support int64s (e.g., SDSS).
                     row_data.append(str(item))
                 else:
                     row_data.append(item)
