@@ -26,6 +26,7 @@ requirements:
     - python
     - ipywidgets >=6.0.0
     - astropy
+    - numpy
 
 test:
   imports:
