@@ -1,8 +1,6 @@
 from ipywidgets import (widgets)
+from ipywidgets import widget_serialization
 from traitlets import (Float, Unicode, Bool, List, Dict, default)
-
-
-
 
 
 """ Definition of the AladinLite widget in the python kernel """
@@ -27,6 +25,9 @@ class Aladin(widgets.DOMWidget):
     overlay_survey = Unicode('').tag(sync=True, o=True)
     overlay_survey_opacity = Float(0.0).tag(sync=True, o=True)
 
+    # values used in selection
+    selection_ids = List(allow_none=True, default_value=None).tag(sync=True, o=True, **widget_serialization)
+    
     # the remaining values exists for the widget constructor's sole purpose
     reticle_size = Float(22).tag(sync=True, o=True)
     reticle_color = Unicode("rgb(178, 50, 178)").tag(sync=True, o=True)
@@ -93,6 +94,8 @@ class Aladin(widgets.DOMWidget):
                 kwargs: widget options
         """
         super(Aladin, self).__init__(**kwargs)
+        if kwargs.get('selection_update'):
+            self.selection_update = kwargs.get('selection_update')
         # trigger the handle_aladin_event function when the send function is called on the js-side
         # see: http://jupyter-notebook.readthedocs.io/en/latest/comms.html
         self.on_msg(self.handle_aladin_event)
@@ -132,7 +135,6 @@ class Aladin(widgets.DOMWidget):
         self.moc_options = moc_options
         self.moc_from_dict_flag = not self.moc_from_dict_flag
 
-
     # Notes:
     # 1 - The loaded table can possess fields tagged as 'masked', who can not be parsed by JSON
     #     As such, the table's columns cant be obtained through the use of table.columns,
@@ -147,7 +149,8 @@ class Aladin(widgets.DOMWidget):
         # theses library must be installed, and are used in votable operations
         # http://www.astropy.org/
         import astropy
-        
+        import numpy as np
+
         table_array = table.__array__()
         self.table_keys= table.keys()
         table_columns= []
@@ -159,6 +162,8 @@ class Aladin(widgets.DOMWidget):
             for item in table_array[i]:
                 if isinstance(item, bytes):
                     row_data.append(item.decode('utf-8'))
+                elif isinstance(item, np.int64):  # Support int64s (e.g., SDSS).
+                    row_data.append(str(item))
                 else:
                     row_data.append(item)
             table_columns.append(row_data)
@@ -197,7 +202,12 @@ class Aladin(widgets.DOMWidget):
                 result= result+' '
             print(result, end='\r')
             self.last_prompt_length= len(result)
-
+        else:
+            if (content.get('event', '').startswith('selection')
+                and self.selection_update):
+                self.selection_ids = content.get('ids')
+                self.selection_update(self.selection_ids)
+            
     def get_JPEG_thumbnail(self):
         """ create a popup window that contains an image representing the widget's current state """
         self.thumbnail_flag= not self.thumbnail_flag
