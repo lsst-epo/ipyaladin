@@ -198,6 +198,11 @@ var ViewAladin = widgets.DOMWidgetView.extend({
 		    type: 'lasso',
 		    ids: that.model.get('selection_ids')
 		});
+		that.send({
+		    event: 'fov',
+		    type: 'corners',
+		    data: JSON.stringify(that.al.getFovCorners())
+		});
 		that.touch();
 		console.log(selection_ids);
 	    } else {
@@ -224,6 +229,15 @@ var ViewAladin = widgets.DOMWidgetView.extend({
                 that.fov_js= true;
                 // fov MUST be cast into float in order to be sent to the model
                 that.model.set('fov', parseFloat(fov.toFixed(5)));
+		var corners = JSON.stringify(that.al.getFovCorners());
+		that.model.set('fovCorners', corners);
+		that.send({
+		    event: 'fov',
+		    type: 'corners',
+		    data: corners
+		});
+		that.touch();
+		console.log(corners);
                 // Note: touch function must be called after calling the model's set method
                 that.touch();
             }else{
@@ -235,6 +249,15 @@ var ViewAladin = widgets.DOMWidgetView.extend({
                 that.target_js= true;
                 that.model.set('target', '' + position.ra.toFixed(6) + ' ' + position.dec.toFixed(6));
                 that.touch();
+		var corners = JSON.stringify(that.al.getFovCorners());
+		that.model.set('fovCorners', corners);
+		that.send({
+		    event: 'fov',
+		    type: 'corners',
+		    data: corners
+		});
+		that.touch();
+		console.log(corners);
             }else{
                 that.target_py= false;
             }
@@ -249,6 +272,13 @@ var ViewAladin = widgets.DOMWidgetView.extend({
             if(!that.fov_js){
                 that.fov_py= true;
                 that.al.setFoV(that.model.get('fov'));
+		var corners = JSON.stringify(that.al.getFovCorners());
+		that.model.set('fovCorners', JSON.stringify(corners));
+		that.send({
+		    event: 'fov',
+		    type: 'corners',
+		    data: corners
+		});
             }else{
                 that.fov_js= false;
             }
