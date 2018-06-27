@@ -1,6 +1,6 @@
 from ipywidgets import (widgets)
 from ipywidgets import widget_serialization
-from traitlets import (Float, Unicode, Bool, List, Dict, default)
+from traitlets import (Float, Unicode, Bool, List, Dict, default, Any)
 
 
 """ Definition of the AladinLite widget in the python kernel """
@@ -19,6 +19,7 @@ class Aladin(widgets.DOMWidget):
     
     # only theses 4 values are actually updated on one side when they change on the other
     fov = Float(60).tag(sync=True, o=True)
+    fovCorners = Any(allow_none=True, default_value=None).tag(sync=True, o=True, **widget_serialization)
     target = Unicode("0 +0").tag(sync=True, o=True)
     coo_frame = Unicode("J2000").tag(sync=True, o=True) 
     survey = Unicode("P/DSS2/color").tag(sync=True, o=True)
@@ -150,7 +151,6 @@ class Aladin(widgets.DOMWidget):
         # http://www.astropy.org/
         import astropy
         import numpy as np
-
         table_array = table.__array__()
         self.table_keys= table.keys()
         table_columns= []
@@ -207,6 +207,9 @@ class Aladin(widgets.DOMWidget):
                 and self.selection_update):
                 self.selection_ids = content.get('ids')
                 self.selection_update(self.selection_ids)
+            if content.get('event', '').startswith('fo'):
+                import json
+                self.fovCorners = json.loads(content.get('data'))
             
     def get_JPEG_thumbnail(self):
         """ create a popup window that contains an image representing the widget's current state """
