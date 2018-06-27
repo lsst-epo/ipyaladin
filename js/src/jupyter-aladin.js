@@ -79,8 +79,8 @@ var ViewAladin = widgets.DOMWidgetView.extend({
     target_js: false,
     target_py: false,
 
-  selection_py: false,
-  selection_js: false,
+
+    selection_js: false,
 
 
     // This function is automatically called when the python-side widget's instance is displayed
@@ -114,9 +114,6 @@ var ViewAladin = widgets.DOMWidgetView.extend({
 	window.PST = pst;
 	pst.lasso(sCanvas);
 	that._canvasResize(sCanvas, rCanvas);
-
-	console.log(pst);
-	console.log(sCanvas);
 
 	var selection_el = this.pst.settings.scope.view._element;
 	this.pst.settings.scope.view.on('mouseup', function(event) {
@@ -163,54 +160,51 @@ var ViewAladin = widgets.DOMWidgetView.extend({
     
     _selection_changed: function() {
 	var that = this;
-    	if(!this.selection_py){
-	    this.selection_js = true;
-	    if(this.al.view.catalogs
-	       && this.al.view.catalogs.length > 0
-	       && this.al.view.catalogs[0].sources
-	       && this.al.selection_cat) {
-		var sources = lodash.cloneDeep(that.al.selection_cat.sources),
-		    sources_xy = [],
-		    scope = that.pst.settings.scope,
-		    cat = that.al.selection_cat,
-		    cat0 = that.al.view.catalogs[0],
-		    cat_found = false;
-		that.al.view.catalogs.forEach(function(c) {
-		    if(cat === c || cat0 === c) {
-			cat_found = true;
-		    } else {
-			c.hide();
-		    }
-		});
-		sources.forEach(function(s) {
-		    var xy = that.al.world2pix(s.ra, s.dec);
-		    sources_xy.push({"point": new scope.Point(xy[0], xy[1]), "id": s.data.objID});
-		});
-		var selection = that.pst.pointsFilter(sources_xy),
-		    selection_ids = [];
-		selection.forEach(function(s) {
-		    selection_ids.push(s['id']);
-		});
-		that.selection_ids = selection_ids;
-		that.model.set('selection_ids', selection_ids);
-		that.send({
-		    event: 'selection',
-		    type: 'lasso',
-		    ids: that.model.get('selection_ids')
-		});
-		that.send({
-		    event: 'fov',
-		    type: 'corners',
-		    data: JSON.stringify(that.al.getFovCorners())
-		});
-		that.touch();
-		console.log(selection_ids);
-	    } else {
-		console.log('No catalog found.');
-	    }
+	that.selection_js = true;
+	if(this.al.view.catalogs
+	   && this.al.view.catalogs.length > 0
+	   && this.al.view.catalogs[0].sources
+	   && this.al.selection_cat) {
+	    var sources = lodash.cloneDeep(that.al.selection_cat.sources),
+		sources_xy = [],
+		scope = that.pst.settings.scope,
+		cat = that.al.selection_cat,
+		cat0 = that.al.view.catalogs[0],
+		cat_found = false;
+	    that.al.view.catalogs.forEach(function(c) {
+		if(cat === c || cat0 === c) {
+		    cat_found = true;
+		} else {
+		    c.hide();
+		}
+	    });
+	    sources.forEach(function(s) {
+		var xy = that.al.world2pix(s.ra, s.dec);
+		sources_xy.push({"point": new scope.Point(xy[0], xy[1]), "id": s.data.objID});
+	    });
+	    var selection = that.pst.pointsFilter(sources_xy),
+		selection_ids = [];
+	    selection.forEach(function(s) {
+		selection_ids.push(s['id']);
+	    });
+	    that.selection_ids = selection_ids;
+	    that.model.set('selection_ids', selection_ids);
+	    that.send({
+		event: 'selection',
+		type: 'lasso',
+		ids: that.model.get('selection_ids')
+	    });
+	    that.send({
+		event: 'fov',
+		type: 'corners',
+		data: JSON.stringify(that.al.getFovCorners())
+	    });
+	    that.touch();
+	    console.log(selection_ids);
 	} else {
-	    this.selection_py = false;
+	    console.log('No catalog found.');
 	}
+	that.selection_js = false;
     },
 
     convert_pyname_to_jsname: function (pyname) {
@@ -236,8 +230,6 @@ var ViewAladin = widgets.DOMWidgetView.extend({
 		    type: 'corners',
 		    data: corners
 		});
-		that.touch();
-		console.log(corners);
                 // Note: touch function must be called after calling the model's set method
                 that.touch();
             }else{
@@ -257,7 +249,6 @@ var ViewAladin = widgets.DOMWidgetView.extend({
 		    data: corners
 		});
 		that.touch();
-		console.log(corners);
             }else{
                 that.target_py= false;
             }
@@ -355,7 +346,6 @@ var ViewAladin = widgets.DOMWidgetView.extend({
 	       && that.al.view.catalogs
 	       && that.al.view.catalogs.length > 0
 	       && that.al.view.catalogs[0].sources) {
-		that.selection_py= true;
 		var scope = that.pst.settings.scope,
 		    cat = lodash.cloneDeep(that.al.selection_cat),
 		    cat0 = that.al.view.catalogs[0],
