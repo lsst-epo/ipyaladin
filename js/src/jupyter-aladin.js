@@ -95,7 +95,7 @@ var ViewAladin = widgets.DOMWidgetView.extend({
         var div_test = document.createElement('div');
         div_test.id = 'aladin-lite-div' + parseInt(Math.random()*1000000);
         // TODO: should this style be somehow inherited from the widget Layout attribute?
-        div_test.setAttribute("style","width:100%;height:400px;");
+        div_test.setAttribute("style","width:100%;height:100%;min-height:600px");
         this.el.appendChild(div_test);
         // We get the options set on the python side and create an instance of the AladinLite object.
         var aladin_options= {};
@@ -104,34 +104,35 @@ var ViewAladin = widgets.DOMWidgetView.extend({
             aladin_options[this.convert_pyname_to_jsname(opt[i])]= this.model.get(opt[i]);
         this.al= aladin_lib.A.aladin([div_test], aladin_options);
 
-      // Added for selection.
-      var that = this;
-      var sCanvas = document.createElement('canvas');
-      var rCanvas = div_test.getElementsByClassName("aladin-reticleCanvas")[0];
-      this.el.appendChild(sCanvas);
-      this.pst = pst;
-      window.PST = pst;
-      pst.lasso(sCanvas);
-      that._canvasResize(sCanvas, rCanvas);
-
-      console.log(pst);
-      console.log(sCanvas);
-
-      var selection_el = this.pst.settings.scope.view._element;
-      this.pst.settings.scope.view.on('mouseup', function(event) {
-	that._selection_changed();
-      });
-      this.pst.settings.scope.view.on('mousedown', function(event) {
-	that._hide_catalogs();
-      });
-
-      new ResizeSensor(div_test, function () {
+	// Added for selection.
+	var that = this,
+	    sCanvas = document.createElement('canvas'),
+	    rCanvas = div_test.getElementsByClassName("aladin-reticleCanvas")[0];
+	sCanvas.id = 'selection-canvas' + parseInt(Math.random()*1000000);
+	this.el.appendChild(sCanvas);
+	this.pst = pst;
+	window.PST = pst;
+	pst.lasso(sCanvas);
 	that._canvasResize(sCanvas, rCanvas);
-      });
 
-      setTimeout(function() {
-	that._canvasResize(sCanvas, rCanvas);
-      }, 2000);
+	console.log(pst);
+	console.log(sCanvas);
+
+	var selection_el = this.pst.settings.scope.view._element;
+	this.pst.settings.scope.view.on('mouseup', function(event) {
+	    that._selection_changed();
+	});
+	this.pst.settings.scope.view.on('mousedown', function(event) {
+	    that._hide_catalogs();
+	});
+
+	new ResizeSensor(div_test, function () {
+	    that._canvasResize(sCanvas, rCanvas);
+	});
+
+	setTimeout(function() {
+	    that._canvasResize(sCanvas, rCanvas);
+	}, 2000);
 
         // Declaration of the variable's listeners:
         this.aladin_events();
@@ -149,7 +150,7 @@ var ViewAladin = widgets.DOMWidgetView.extend({
 	canvas.style.left = "0px";
 	pst.settings.scope.view.setViewSize(canvas.width, canvas.height);
     },
-
+    
     _hide_catalogs: function() {
 	var that = this;
 	if(this.al.view.catalogs
@@ -159,7 +160,7 @@ var ViewAladin = widgets.DOMWidgetView.extend({
 	    });
 	}
     },
-
+    
     _selection_changed: function() {
 	var that = this;
     	if(!this.selection_py){
@@ -184,7 +185,6 @@ var ViewAladin = widgets.DOMWidgetView.extend({
 		sources.forEach(function(s) {
 		    var xy = that.al.world2pix(s.ra, s.dec);
 		    sources_xy.push({"point": new scope.Point(xy[0], xy[1]), "id": s.data.objID});
-  		     //sources_xy.push({"point": new scope.Point(s.x, s.y), "id": s.data.objID});
 		});
 		var selection = that.pst.pointsFilter(sources_xy),
 		    selection_ids = [];
@@ -206,7 +206,7 @@ var ViewAladin = widgets.DOMWidgetView.extend({
 	} else {
 	    this.selection_py = false;
 	}
-  },
+    },
 
     convert_pyname_to_jsname: function (pyname) {
         var i, temp= pyname.split('_');
@@ -320,49 +320,48 @@ var ViewAladin = widgets.DOMWidgetView.extend({
         this.listenTo(this.model, 'change:color_map_flag', function(){
             that.al.getBaseImageLayer().getColorMap().update(that.model.get('color_map_name'));
         });
-
-      this.listenTo(this.model, 'change:selection_ids', function(){
-	if(!that.selection_js
-	   && that.al.view.catalogs
-	   && that.al.view.catalogs.length > 0
-	   && that.al.view.catalogs[0].sources) {
-          that.selection_py= true;
-	  var scope = that.pst.settings.scope,
-	      cat = lodash.cloneDeep(that.al.selection_cat),
-	      cat0 = that.al.view.catalogs[0],
-	      cat_found = false,
-	      sources = that.al.selection_cat.sources,
-	      selection_ids = that.model.get('selection_ids'),
-	      new_sources = [];
-	  that.al.view.catalogs.forEach(function(c) {
-	    if(cat === c) {
-		cat_found = true;
-	    } else {
-	      c.hide();
-	    }
-	  });
-	  scope.project.activeLayer.removeChildren();
-	  that.selection_ids = selection_ids;
-	  sources.forEach(function(s) {
-	    var match = selection_ids.some( function(i) {
-	      if(s.data.objID === i) {
-		s.show();
-		new_sources.push(s);
-		return s;
-	      }
-	    });
-	    if(!match)
-		s.hide();
-	  });
-	  var new_cat = aladin_lib.A.catalog({'color': '#BEE7F5'}); //{onClick: 'showTable'});
-          that.al.addCatalog(new_cat);
-          new_cat.addSources(new_sources);
-	  new_cat.show();
-	  console.log(new_cat);
-        } else {
-          that.selection_js= false;
-        }
-      });
+	this.listenTo(this.model, 'change:selection_ids', function(){
+	    if(!that.selection_js
+	       && that.al.view.catalogs
+	       && that.al.view.catalogs.length > 0
+	       && that.al.view.catalogs[0].sources) {
+		that.selection_py= true;
+		var scope = that.pst.settings.scope,
+		    cat = lodash.cloneDeep(that.al.selection_cat),
+		    cat0 = that.al.view.catalogs[0],
+		    cat_found = false,
+		    sources = that.al.selection_cat.sources,
+		    selection_ids = that.model.get('selection_ids'),
+		    new_sources = [];
+		that.al.view.catalogs.forEach(function(c) {
+		    if(cat === c) {
+			cat_found = true;
+		    } else {
+			c.hide();
+		    }
+		});
+		scope.project.activeLayer.removeChildren();
+		that.selection_ids = selection_ids;
+		sources.forEach(function(s) {
+		    var match = selection_ids.some( function(i) {
+			if(s.data.objID === i) {
+			    s.show();
+			    new_sources.push(s);
+			    return s;
+			}
+		    });
+		    if(!match)
+			s.hide();
+		});
+		var new_cat = aladin_lib.A.catalog({'color': '#BEE7F5'}); //{onClick: 'showTable'});
+		that.al.addCatalog(new_cat);
+		new_cat.addSources(new_sources);
+		new_cat.show();
+		console.log(new_cat);
+            } else {
+		that.selection_js= false;
+            }
+	});
     }
 });
 
