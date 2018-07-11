@@ -111,15 +111,16 @@ var ViewAladin = widgets.DOMWidgetView.extend({
 	sCanvas.id = 'selection-canvas' + parseInt(Math.random()*1000000);
 	this.el.appendChild(sCanvas);
 	this.pst = pst;
-	window.PST = pst;
-	pst.lasso(sCanvas);
+	this.pst_settings = new pst.Settings();
+	this.pst_settings.alpha = 0.04;
+	this.pst.lasso(this.pst_settings, sCanvas);
 	that._canvasResize(sCanvas, rCanvas);
 
-	var selection_el = this.pst.settings.scope.view._element;
-	this.pst.settings.scope.view.on('mouseup', function(event) {
+	var selection_el = this.pst_settings.scope.view._element;
+	this.pst_settings.scope.view.on('mouseup', function(event) {
 	    that._selection_changed();
 	});
-	this.pst.settings.scope.view.on('mousedown', function(event) {
+	this.pst_settings.scope.view.on('mousedown', function(event) {
 	    that._hide_catalogs();
 	});
 
@@ -145,7 +146,7 @@ var ViewAladin = widgets.DOMWidgetView.extend({
 	canvas.style.position = "absolute";
 	canvas.style.top = "0px";
 	canvas.style.left = "0px";
-	pst.settings.scope.view.setViewSize(canvas.width, canvas.height);
+	this.pst_settings.scope.view.setViewSize(canvas.width, canvas.height);
     },
     
     _hide_catalogs: function() {
@@ -167,7 +168,7 @@ var ViewAladin = widgets.DOMWidgetView.extend({
 	   && this.al.selection_cat) {
 	    var sources = lodash.cloneDeep(that.al.selection_cat.sources),
 		sources_xy = [],
-		scope = that.pst.settings.scope,
+		scope = that.pst_settings.scope,
 		cat = that.al.selection_cat,
 		cat0 = that.al.view.catalogs[0],
 		cat_found = false;
@@ -182,7 +183,7 @@ var ViewAladin = widgets.DOMWidgetView.extend({
 		var xy = that.al.world2pix(s.ra, s.dec);
 		sources_xy.push({"point": new scope.Point(xy[0], xy[1]), "id": s.data.objID});
 	    });
-	    var selection = that.pst.pointsFilter(sources_xy),
+	    var selection = that.pst.pointsFilter(that.pst_settings, sources_xy),
 		selection_ids = [];
 	    selection.forEach(function(s) {
 		selection_ids.push(s['id']);
@@ -346,7 +347,7 @@ var ViewAladin = widgets.DOMWidgetView.extend({
 	       && that.al.view.catalogs
 	       && that.al.view.catalogs.length > 0
 	       && that.al.view.catalogs[0].sources) {
-		var scope = that.pst.settings.scope,
+		var scope = that.pst_settings.scope,
 		    cat = lodash.cloneDeep(that.al.selection_cat),
 		    cat0 = that.al.view.catalogs[0],
 		    cat_found = false,
