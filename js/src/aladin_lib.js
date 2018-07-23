@@ -535,7 +535,7 @@ Logger = {};
 
 Logger.log = function(action, params) {
     try {
-        var logUrl = "http://alasky.unistra.fr/cgi/AladinLiteLogger/log.py";
+        var logUrl = "//alasky.unistra.fr/cgi/AladinLiteLogger/log.py";
         var paramStr = "";
         if (params) {
             paramStr = JSON.stringify(params);
@@ -2587,15 +2587,15 @@ URLBuilder = (function() {
                     target = coo.format('s');
                 }
             }
-            return 'http://alasky.unistra.fr/cgi/simbad-flat/simbad-cs.py?target=' + encodeURIComponent(target) + '&SR=' + radiusDegrees + '&format=votable&SRUNIT=deg&SORTBY=nbref';
+            return '//alasky.unistra.fr/cgi/simbad-flat/simbad-cs.py?target=' + encodeURIComponent(target) + '&SR=' + radiusDegrees + '&format=votable&SRUNIT=deg&SORTBY=nbref';
         },
 
         buildNEDPositionCSURL: function(ra, dec, radiusDegrees) {
-                return 'http://ned.ipac.caltech.edu/cgi-bin/nph-objsearch?search_type=Near+Position+Search&of=xml_main&RA=' + ra + '&DEC=' + dec + '&SR=' + radiusDegrees;
+                return '//ned.ipac.caltech.edu/cgi-bin/nph-objsearch?search_type=Near+Position+Search&of=xml_main&RA=' + ra + '&DEC=' + dec + '&SR=' + radiusDegrees;
         },
 
         buildNEDObjectCSURL: function(object, radiusDegrees) {
-                return 'http://ned.ipac.caltech.edu/cgi-bin/nph-objsearch?search_type=Near+Name+Search&radius=' + (60 * radiusDegrees) + '&of=xml_main&objname=' + object;
+                return '//ned.ipac.caltech.edu/cgi-bin/nph-objsearch?search_type=Near+Name+Search&radius=' + (60 * radiusDegrees) + '&of=xml_main&objname=' + object;
         },
 
         buildVizieRCSURL: function(vizCatId, target, radiusDegrees) {
@@ -2605,11 +2605,11 @@ URLBuilder = (function() {
                     target = coo.format('s');
                 }
             }
-            return 'http://vizier.unistra.fr/viz-bin/votable?-source=' + vizCatId + '&-c=' + encodeURIComponent(target) + '&-out.max=999999&-c.rd=' + radiusDegrees;
+            return '//vizier.unistra.fr/viz-bin/votable?-source=' + vizCatId + '&-c=' + encodeURIComponent(target) + '&-out.max=999999&-c.rd=' + radiusDegrees;
         },
 
         buildSkyBotCSURL: function(ra, dec, radius, epoch, queryOptions) {
-            var url = 'http://vo.imcce.fr/webservices/skybot/skybotconesearch_query.php?-from=AladinLite';
+            var url = '//vo.imcce.fr/webservices/skybot/skybotconesearch_query.php?-from=AladinLite';
             url += '&RA=' + encodeURIComponent(ra);
             url += '&DEC=' + encodeURIComponent(dec);
             url += '&SR=' + encodeURIComponent(radius);
@@ -3321,11 +3321,11 @@ HiPSDefinition = (function() {
     "hips_order": "10",
     "hips_frame": "equatorial",
     "hips_tile_format": "jpeg",
-    "hips_service_url": "http://alasky.unistra.fr/SDSS/DR9/color",
-    "hips_service_url_1": "http://alaskybis.unistra.fr/SDSS/DR9/color",
-    "hips_service_url_2": "https://alaskybis.unistra.fr/SDSS/DR9/color",
-    "hips_service_url_3": "http://healpix.ias.u-psud.fr/SDSS9Color",
-    "hips_service_url_4": "http://skies.esac.esa.int/SDSS9Color/"
+    "hips_service_url": "//alasky.unistra.fr/SDSS/DR9/color",
+    "hips_service_url_1": "//alaskybis.unistra.fr/SDSS/DR9/color",
+    "hips_service_url_2": "//alaskybis.unistra.fr/SDSS/DR9/color",
+    "hips_service_url_3": "//healpix.ias.u-psud.fr/SDSS9Color",
+    "hips_service_url_4": "//skies.esac.esa.int/SDSS9Color/"
 }, {
     "ID": "CDS/P/SPITZER/color",
     "obs_title": "IRAC HEALPix survey, color",
@@ -9093,7 +9093,7 @@ HpxImageSurvey = (function() {
      },
      {
         "id": "P/SDSS9/color",
-        "url": "http://alasky.u-strasbg.fr/SDSS/DR9/color",
+        "url": "//alasky.u-strasbg.fr/SDSS/DR9/color",
         "name": "SDSS9 colored",
         "maxOrder": 10,
         "frame": "equatorial",
@@ -11768,7 +11768,7 @@ Aladin = (function() {
 
 
 		// Aladin logo
-		$("<div class='aladin-logo-container'><a href='http://aladin.unistra.fr/' title='Powered by Aladin Lite' target='_blank'><div class='aladin-logo'></div></a></div>").appendTo(aladinDiv);
+		$("<div class='aladin-logo-container'><a href='//aladin.unistra.fr/' title='Powered by Aladin Lite' target='_blank'><div class='aladin-logo'></div></a></div>").appendTo(aladinDiv);
 		
 		
 		// we store the boxes
@@ -11787,7 +11787,7 @@ Aladin = (function() {
 
 	    // retrieve available surveys
 	    $.ajax({
-	        url: "http://aladin.unistra.fr/java/nph-aladin.pl",
+	        url: "//aladin.unistra.fr/java/nph-aladin.pl",
 	        data: {"frame": "aladinLiteDic"},
 	        method: 'GET',
 	        dataType: 'jsonp', // could this be repaced by json ??
@@ -11953,7 +11953,7 @@ Aladin = (function() {
     /**** CONSTANTS ****/
     Aladin.VERSION = "2017-10-04"; // will be filled by the build.sh script
     
-    Aladin.JSONP_PROXY = "http://alasky.unistra.fr/cgi/JSONProxy";
+    Aladin.JSONP_PROXY = "//alasky.unistra.fr/cgi/JSONProxy";
 
 
     
@@ -12982,7 +12982,7 @@ Aladin.prototype.getShareURL = function() {
     coo.prec = 7;
     coo.lon = radec[0];
     coo.lat = radec[1];
-    return 'http://aladin.unistra.fr/AladinLite/?target=' + encodeURIComponent(coo.format('s')) +
+    return '//aladin.unistra.fr/AladinLite/?target=' + encodeURIComponent(coo.format('s')) +
            '&fov=' + this.getFov()[0].toFixed(2) + '&survey=' + encodeURIComponent(this.getBaseImageLayer().id);
 };
 
@@ -13000,10 +13000,10 @@ Aladin.prototype.getEmbedCode = function() {
     var survey = this.getBaseImageLayer().id;
     var fov = this.getFov()[0];
     var s = '';
-    s += '<link rel="stylesheet" href="http://aladin.unistra.fr/AladinLite/api/v2/latest/aladin.min.css" />\n';
+    s += '<link rel="stylesheet" href="//aladin.unistra.fr/AladinLite/api/v2/latest/aladin.min.css" />\n';
     s += '<script type="text/javascript" src="//code.jquery.com/jquery-1.9.1.min.js" charset="utf-8"></script>\n';
     s += '<div id="aladin-lite-div" style="width:400px;height:400px;"></div>\n';
-    s += '<script type="text/javascript" src="http://aladin.unistra.fr/AladinLite/api/v2/latest/aladin.min.js" charset="utf-8"></script>\n';
+    s += '<script type="text/javascript" src="//aladin.unistra.fr/AladinLite/api/v2/latest/aladin.min.js" charset="utf-8"></script>\n';
     s += '<script type="text/javascript">\n';
     s += 'var aladin = A.aladin("#aladin-lite-div", {survey: "' + survey + 'P/DSS2/color", fov: ' + fov.toFixed(2) + ', target: "' + coo.format('s') + '"});\n';
     s += '</script>';
@@ -13031,7 +13031,7 @@ Aladin.prototype.displayFITS = function(url, options, successCallback, errorCall
     }
     var self = this;
     $.ajax({
-        url: 'http://alasky.unistra.fr/cgi/fits2HiPS',
+        url: '//alasky.unistra.fr/cgi/fits2HiPS',
         data: data,
         method: 'GET',
         dataType: 'json',
